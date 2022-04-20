@@ -56,6 +56,8 @@ option(BUILD_SENSORS    "Build the ZED Open Capture Sensors Modules"            
 option(BUILD_EXAMPLES   "Build the ZED Open Capture examples"                         ON)
 option(DEBUG_CAM_REG    "Add functions to log the values of the registers of camera"  OFF)
 
+option(BUILD_ROS        "Build the ZED Open Capture ROS wrapper"                      ON)
+
 ############################################################################
 # Sources
 set(SRC_VIDEO
@@ -96,6 +98,12 @@ include_directories(
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 
 ############################################################################
+if (BUILD_ROS)
+    find_package(catkin REQUIRED COMPONENTS image_transport sensor_msgs cv_bridge rosbag)
+    catkin_package()
+    include_directories(${catkin_INCLUDE_DIRS})
+endif()
+
 # Generate libraries
 if(DEBUG_CAM_REG)
     message("* Registers logging available")
@@ -137,6 +145,18 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${SRC_FULL} )
 target_link_libraries( ${PROJECT_NAME}  ${DEP_LIBS})
+
+if (BUILD_ROS)
+    ##### OpenCV is required
+    find_package(OpenCV REQUIRED)
+    include_directories(${OpenCV_INCLUDE_DIRS})
+
+    add_executable(zed_node src/zed_node.cpp)
+    target_link_libraries(zed_node ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PROJECT_NAME} )
+
+    add_executable(export_zed_data scripts/export_zed_data.cpp)
+    target_link_libraries(export_zed_data ${catkin_LIBRARIES} ${OpenCV_LIBS})
+endif()
 
 ############################################################################
 # Install rules

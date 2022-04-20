@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>zed_open_capture</name>
+    <version>0.0.1</version>
+    <description>Stereolabs zed-open-capture package</description>
+
+    <maintainer email="support@stereolabs.com">STEREOLABS</maintainer>
+    <maintainer email="morten.c.nissov@gmail.com">ICEYTAN</maintainer>
+    <license>MIT</license>
+
+    <url type="website">http://stereolabs.com/</url>
+    <url type="repository">https://github.com/ntnu-arl/zed-open-capture</url>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <depend>image_transport</depend>
+    <depend>sensor_msgs</depend>
+    <depend>cv_bridge</depend>
+
+    <export></export>
+</package>
