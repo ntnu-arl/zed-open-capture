@@ -242,6 +242,7 @@ void ZEDWrapper::video_callback() {
         }
         // <---- Get Video frame
 
+        /*
         // ----> Video Debug information
         videoTs << std::fixed << std::setprecision(9) << "Video timestamp: " << static_cast<double>(last_timestamp)/1e9<< " sec" ;
         if( last_timestamp!=0 )
@@ -306,6 +307,7 @@ void ZEDWrapper::video_callback() {
             }
         }
         // <---- Keyboard handling
+        */
     }
     
 }
