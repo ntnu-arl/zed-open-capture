@@ -116,7 +116,7 @@ void ZEDWrapper::sensor_callback() {
         {
             // ----> Create and Send ROS msg
             sensor_msgs::ImuPtr imu_raw_msg = boost::make_shared<sensor_msgs::Imu>();
-            imu_raw_msg->header.frame_id = "/base_link";
+            imu_raw_msg->header.frame_id = "zed_stereo/base_link";
             imu_raw_msg->header.seq = msg_count++;
             imu_raw_msg->header.stamp.fromNSec(imu_data.timestamp);
             imu_raw_msg->angular_velocity.x = imu_data.aX;
@@ -231,10 +231,10 @@ void ZEDWrapper::video_callback() {
             header.seq = msg_count++;
             header.stamp.fromNSec(frame.timestamp);
 
-            header.frame_id = "left_cam";
+            header.frame_id = "zed_stereo/left_cam";
             auto left_msg  = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, frameBGR(left_part)).toImageMsg();
 
-            header.frame_id = "right_cam";
+            header.frame_id = "zed_stereo/right_cam";
             auto right_msg = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, frameBGR(right_part)).toImageMsg();
 
             pub_left_.publish(left_msg);
