@@ -119,12 +119,12 @@ void ZEDWrapper::sensor_callback() {
             imu_raw_msg->header.frame_id = "zed_stereo/base_link";
             imu_raw_msg->header.seq = msg_count++;
             imu_raw_msg->header.stamp.fromNSec(imu_data.timestamp);
-            imu_raw_msg->angular_velocity.x = imu_data.aX;
-            imu_raw_msg->angular_velocity.y = imu_data.aY;
-            imu_raw_msg->angular_velocity.z = imu_data.aZ;
-            imu_raw_msg->linear_acceleration.x = imu_data.gX;
-            imu_raw_msg->linear_acceleration.y = imu_data.gY;
-            imu_raw_msg->linear_acceleration.z = imu_data.gZ;
+            imu_raw_msg->angular_velocity.x = imu_data.gX;
+            imu_raw_msg->angular_velocity.y = imu_data.gY;
+            imu_raw_msg->angular_velocity.z = imu_data.gZ;
+            imu_raw_msg->linear_acceleration.x = imu_data.aX;
+            imu_raw_msg->linear_acceleration.y = imu_data.aY;
+            imu_raw_msg->linear_acceleration.z = imu_data.aZ;
             imu_raw_msg->linear_acceleration_covariance[0] = -1;
             imu_raw_msg->angular_velocity_covariance[0] = -1;
             imu_raw_msg->orientation_covariance[0] = -1;
