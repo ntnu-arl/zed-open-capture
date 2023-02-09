@@ -65,6 +65,8 @@ void ZEDWrapper::init() {
 
     // ----> Create a Video Capture object
     video_cap_ = std::make_shared<sl_oc::video::VideoCapture>(params);
+	video_cap_->setExposure(sl_oc::video::CAM_SENS_POS::LEFT, 10);
+	video_cap_->setExposure(sl_oc::video::CAM_SENS_POS::RIGHT, 10);
     if( !video_cap_->initializeVideo(-1) )
     {
         std::stringstream ss;
