@@ -30,6 +30,10 @@ private:
     // ts, accel, gyro
     std::string imu_info_[3];
 
+    // Exposure percentage
+    bool manual_exposure_ = false;
+    int exposure_percentage_ = 50;
+
     // protect multi-read of imu infor
     std::mutex imu_mutex_;
 
@@ -65,8 +69,6 @@ void ZEDWrapper::init() {
 
     // ----> Create a Video Capture object
     video_cap_ = std::make_shared<sl_oc::video::VideoCapture>(params);
-	video_cap_->setExposure(sl_oc::video::CAM_SENS_POS::LEFT, 10);
-	video_cap_->setExposure(sl_oc::video::CAM_SENS_POS::RIGHT, 10);
     if( !video_cap_->initializeVideo(-1) )
     {
         std::stringstream ss;
@@ -102,6 +104,18 @@ void ZEDWrapper::init() {
     // <---- Enable video/sensors synchronization
 
     video_cap_thread_ = std::make_shared<std::thread>(&ZEDWrapper::video_callback, this);
+
+    if (manual_exposure_)
+    {
+      int left_exp = video_cap_->getExposure(sl_oc::video::CAM_SENS_POS::LEFT);
+      int right_exp = video_cap_->getExposure(sl_oc::video::CAM_SENS_POS::RIGHT);
+      std::cout << "Current exposures: " << "\n\t" << left_exp  << ", " << "\n\t" << right_exp << std::endl;
+      video_cap_->setExposure(sl_oc::video::CAM_SENS_POS::LEFT, exposure_percentage_);
+      video_cap_->setExposure(sl_oc::video::CAM_SENS_POS::RIGHT, exposure_percentage_);
+      left_exp = video_cap_->getExposure(sl_oc::video::CAM_SENS_POS::LEFT);
+      right_exp = video_cap_->getExposure(sl_oc::video::CAM_SENS_POS::RIGHT);
+      std::cout << "New exposures: " << left_exp << ", " << right_exp << std::endl;
+    }
 }
 
 void ZEDWrapper::sensor_callback() {
@@ -316,6 +330,9 @@ void ZEDWrapper::video_callback() {
 
 ZEDWrapper::ZEDWrapper(ros::NodeHandle nh) {
     // read ros param
+    nh.param("manual_exposure", manual_exposure_, false);
+    nh.param("exposure_percentage", exposure_percentage_, 100);
+    
 
     pub_imu_ = nh.advertise<sensor_msgs::Imu>("imu/data", 100, false);
 
