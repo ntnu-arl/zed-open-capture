@@ -33,6 +33,9 @@ private:
     // Exposure percentage
     bool manual_exposure_ = false;
     int exposure_percentage_ = 50;
+    int gain_percentage_ = 50;
+    bool manual_white_balance_ = false;
+    int white_balance_temperature_ = 4000;
 
     // protect multi-read of imu infor
     std::mutex imu_mutex_;
@@ -115,7 +118,35 @@ void ZEDWrapper::init() {
       left_exp = video_cap_->getExposure(sl_oc::video::CAM_SENS_POS::LEFT);
       right_exp = video_cap_->getExposure(sl_oc::video::CAM_SENS_POS::RIGHT);
       std::cout << "New exposures: " << left_exp << ", " << right_exp << std::endl;
+
+      // Set the gain
+      int left_gain = video_cap_->getGain(sl_oc::video::CAM_SENS_POS::LEFT);
+      int right_gain = video_cap_->getGain(sl_oc::video::CAM_SENS_POS::RIGHT);
+      std::cout << "Current gains: " << "\n\t" << left_gain  << ", " << "\n\t" << right_gain << std::endl;
+      video_cap_->setGain(sl_oc::video::CAM_SENS_POS::LEFT, gain_percentage_);
+      video_cap_->setGain(sl_oc::video::CAM_SENS_POS::RIGHT, gain_percentage_);
+      left_gain = video_cap_->getGain(sl_oc::video::CAM_SENS_POS::LEFT);
+      right_gain = video_cap_->getGain(sl_oc::video::CAM_SENS_POS::RIGHT);
+      std::cout << "New gains: " << left_gain << ", " << right_gain << std::endl;
     }
+    else
+    {
+      video_cap_->setAECAGC(true);
+    }
+
+    if (manual_white_balance_)
+    {
+      int wb = video_cap_->getWhiteBalance();
+      std::cout << "Current white balance: " << wb << std::endl;
+      video_cap_->setWhiteBalance(white_balance_temperature_);
+      wb = video_cap_->getWhiteBalance();
+      std::cout << "New white balance: " << wb << std::endl;
+    }
+    else
+    {
+      video_cap_->setAutoWhiteBalance(true);
+    }
+
 }
 
 void ZEDWrapper::sensor_callback() {
@@ -332,7 +363,9 @@ ZEDWrapper::ZEDWrapper(ros::NodeHandle nh) {
     // read ros param
     nh.param("manual_exposure", manual_exposure_, false);
     nh.param("exposure_percentage", exposure_percentage_, 100);
-    
+    nh.param("gain_percentage", gain_percentage_, 100);
+    nh.param("manual_white_balance", manual_white_balance_, false);
+    nh.param("white_balance_temperature", white_balance_temperature_, 4000);
 
     pub_imu_ = nh.advertise<sensor_msgs::Imu>("imu/data", 100, false);
 
